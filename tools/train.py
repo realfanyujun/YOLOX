@@ -9,7 +9,9 @@ from loguru import logger
 
 import torch
 import torch.backends.cudnn as cudnn
-
+import sys
+import importlib
+import os
 from yolox.core import launch
 from yolox.exp import Exp, check_exp_value, get_exp
 from yolox.utils import configure_module, configure_nccl, configure_omp, get_num_devices
@@ -37,7 +39,7 @@ def make_parser():
     parser.add_argument(
         "-f",
         "--exp_file",
-        default=None,
+        default="yolox/exp/yolox_base.py",
         type=str,
         help="plz input your experiment description file",
     )
@@ -121,7 +123,10 @@ def main(exp: Exp, args):
 if __name__ == "__main__":
     configure_module()
     args = make_parser().parse_args()
-    exp = get_exp(args.exp_file, args.name)
+    sys.path.append(os.path.dirname(args.exp_file))
+    current_exp = importlib.import_module(os.path.basename(args.exp_file).split(".")[0])
+    exp = current_exp.Exp()
+    #exp = get_exp(args.exp_file, args.name)
     exp.merge(args.opts)
     check_exp_value(exp)
 

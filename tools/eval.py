@@ -14,6 +14,7 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 
 from yolox.core import launch
 from yolox.exp import get_exp
+#from _coco_evaluator import COCOEvaluator
 from yolox.utils import (
     configure_module,
     configure_nccl,
@@ -150,6 +151,17 @@ def main(exp, args, num_gpu):
     logger.info("Model Structure:\n{}".format(str(model)))
 
     evaluator = exp.get_evaluator(args.batch_size, is_distributed, args.test, args.legacy)
+    '''
+    evaluator = COCOEvaluator(
+            dataloader=exp.get_eval_loader(args.batch_size, is_distributed,
+                                            testdev=False, legacy=args.legacy),
+            img_size=exp.test_size,
+            confthre=exp.test_conf,
+            nmsthre=exp.nmsthre,
+            num_classes=exp.num_classes,
+            testdev=False,
+            )
+    '''
     evaluator.per_class_AP = True
     evaluator.per_class_AR = True
 

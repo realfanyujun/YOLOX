@@ -8,7 +8,7 @@ import torch
 import torch.distributed as dist
 import torch.nn as nn
 
-from .base_exp import BaseExp
+from yolox.exp import BaseExp
 
 __all__ = ["Exp", "check_exp_value"]
 
@@ -19,11 +19,12 @@ class Exp(BaseExp):
 
         # ---------------- model config ---------------- #
         # detect classes number of model
-        self.num_classes = 80
+        #self.num_classes = 80
+        self.num_classes = 4
         # factor of model depth
-        self.depth = 1.00
+        self.depth = 0.33
         # factor of model width
-        self.width = 1.00
+        self.width = 0.5
         # activation name. For example, if using "relu", then "silu" will be replaced to "relu".
         self.act = "silu"
 
@@ -38,13 +39,13 @@ class Exp(BaseExp):
         # You can uncomment this line to specify a multiscale range
         # self.random_size = (14, 26)
         # dir of dataset images, if data_dir is None, this project will use `datasets` dir
-        self.data_dir = None
+        self.data_dir = "/mnt/data2/UAVDT/vid"
         # name of annotation file for training
-        self.train_ann = "instances_train2017.json"
+        self.train_ann = "M0101.json"
         # name of annotation file for evaluation
-        self.val_ann = "instances_val2017.json"
+        self.val_ann = "M0101.json"
         # name of annotation file for testing
-        self.test_ann = "instances_test2017.json"
+        self.test_ann = "test.json"
 
         # --------------- transform config ----------------- #
         # prob of applying mosaic aug
@@ -143,6 +144,7 @@ class Exp(BaseExp):
             data_dir=self.data_dir,
             json_file=self.train_ann,
             img_size=self.input_size,
+            name="train",
             preproc=TrainTransform(
                 max_labels=50,
                 flip_prob=self.flip_prob,
@@ -304,7 +306,7 @@ class Exp(BaseExp):
         return COCODataset(
             data_dir=self.data_dir,
             json_file=self.val_ann if not testdev else self.test_ann,
-            name="val2017" if not testdev else "test2017",
+            name="val" if not testdev else "test",
             img_size=self.test_size,
             preproc=ValTransform(legacy=legacy),
         )

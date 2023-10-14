@@ -157,6 +157,7 @@ class COCODataset(CacheDataset):
     def pull_item(self, index):
         id_ = self.ids[index]
         label, origin_image_size, _, _ = self.annotations[index]
+        #print("pull_item", origin_image_size)
         img = self.read_img(index)
 
         return img, copy.deepcopy(label), origin_image_size, np.array([id_])
